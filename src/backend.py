@@ -2,10 +2,14 @@ from fastapi import FastAPI, File, UploadFile
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
 from src.ingestion import ingest_file
+from src.vectorstore import init_qdrant
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # initialize resoure
+    # initialize resoure 
+    print("initialzing qdrant DB...")
+    init_qdrant()
+    print("Successfully initialzed qdrant DB...")
     yield
 
 app = FastAPI(lifespan=lifespan)

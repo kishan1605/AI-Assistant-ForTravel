@@ -2,6 +2,9 @@ from fastapi import UploadFile
 import pymupdf
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document #Document is a DS which provide infor about the data like source of it
+from src.embedding import get_embeddings
+from src.vectorstore import get_qdrant
+from src.config import COLLECTION_NAME
 
 async def ingest_file(file: UploadFile):
     print("Proceesing file " + f'{file.filename}')
@@ -29,7 +32,21 @@ async def ingest_file(file: UploadFile):
     chunks = splitter.split_documents(docs)
     print(f'The chunk size is of size {len(chunks)}')
 
-    return chunks 
+    print("embeddding the chunks...")
+    data = [chunk.page_content for chunk in chunks]
+    embeddings = get_embeddings(data)
+
+    client = get_qdrant()
+
+    payload = [{"text": chunk.page_content, **chunk.metadata} for chunk in chunks]
+
+    client.upload_collection(
+        collection_name = COLLECTION_NAME,
+        vectors = embeddings,
+        payload = payload
+    )
+
+    print(f"Upload of {len(chunks)} documents from {page_count} pages completed")
 
     
 
