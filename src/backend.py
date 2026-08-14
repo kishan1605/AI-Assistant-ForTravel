@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from pydantic import BaseModel
 from src.ingestion import ingest_file
 from src.vectorstore import init_qdrant
-from src.retrive import get_response
+from src.generate import generate_output
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,7 +20,7 @@ class GetQuestion(BaseModel):
 
 @app.post('/question')
 async def get_question(req: GetQuestion):
-    res = await get_response(req.qsn)
+    res = await generate_output(req.qsn)
     return {"answer": res}
 
 @app.post('/upload')
