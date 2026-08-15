@@ -46,7 +46,7 @@ async def ingest_file(file: UploadFile):
         payload = payload
     )
 
-    print(f"Upload of {len(chunks)} documents from {page_count} pages completed")
+    return (f"Upload of {len(chunks)} documents from {page_count} pages completed")
 
     
 
